@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>iFix — Book an Appointment</title>
+  <style>
+    /* ---------- Reset & base ---------- */
+    :root{
+      --bg: #0f1724; /* dark blue */
+      --card: #0b1220;
+      --accent1: #08a0f7; /* bright blue */
+      --accent2: #38d39f; /* mint */
+      --muted: #9aa7b2;
+      --glass: rgba(255,255,255,0.04);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071018);color:#e6eef3}
+
+    /* ---------- Header ---------- */
+    header{
+      display:flex;align-items:center;justify-content:space-between;padding:18px 24px;gap:16px;
+      background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));backdrop-filter: blur(6px);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo {
+      width:54px;height:54px;border-radius:10px;display:grid;place-items:center;
+      background: linear-gradient(135deg,var(--accent1),var(--accent2));box-shadow:0 6px 18px rgba(8,160,247,0.18);
+      font-weight:800;color:#041422;font-size:20px;letter-spacing:0.6px
+    }
+    .brand h1{font-size:20px;margin:0}
+    .brand p{margin:0;font-size:13px;color:var(--muted)}
+
+    /* ---------- Main layout ---------- */
+    main{display:grid;place-items:center;padding:44px 20px}
+    .card{
+      width:100%;max-width:920px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03);
+      display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start;
+    }
+
+    /* Left intro */
+    .intro h2{margin:0 0 8px 0;font-size:22px}
+    .intro p{color:var(--muted);margin:0 0 18px 0}
+
+    /* Right: form */
+    form{background:var(--card);padding:18px;border-radius:10px}
+    .row{display:flex;gap:10px}
+    .field{display:flex;flex-direction:column;margin-bottom:12px}
+    label{font-size:13px;margin-bottom:6px;color:#d9eefb}
+    input[type="text"], input[type="tel"], input[type="date"], input[type="time"], select{
+      padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit;font-size:15px
+    }
+    input::placeholder{color:var(--muted)}
+    .small{font-size:13px;color:var(--muted);margin-top:6px}
+
+    .submit{
+      display:inline-block;padding:10px 16px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));
+      color:#041422;font-weight:700;cursor:pointer;margin-top:8px;font-size:15px
+    }
+
+    /* confirmation */
+    .confirmation{display:none;margin-top:12px;padding:10px;border-radius:8px;background:rgba(56,211,159,0.08);color:var(--accent2);border:1px solid rgba(56,211,159,0.12)}
+
+    /* Responsive */
+    @media (max-width:880px){
+      .card{grid-template-columns:1fr;}
+      header{padding:14px}
+      .logo{width:46px;height:46px;font-size:18px}
+    }
+
+    /* Small niceties */
+    .hint{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand" aria-label="iFix brand">
+      <div class="logo" aria-hidden="true">iF</div>
+      <div>
+        <h1>iFix</h1>
+        <p>Fast device repairs & appointments</p>
+      </div>
+    </div>
+    <nav aria-label="Top navigation">
+      <span class="hint">Open hours: Mon–Sat 09:00–18:00</span>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card" aria-labelledby="book-heading">
+      <div class="intro">
+        <h2 id="book-heading">Book an appointment</h2>
+        <p>Choose a date and time that suits you. We will confirm the booking by phone.</p>
+        <ul style="color:var(--muted);font-size:14px;padding-left:18px;">
+          <li>Quick turnarounds for most repairs</li>
+          <li>No hidden charges — estimate given after diagnosis</li>
+        </ul>
+      </div>
+
+      <form id="appointmentForm" aria-describedby="formDesc" onsubmit="return handleSubmit(event)">
+        <div id="formDesc" class="small">Please enter your name and contact number. We will call to confirm.</div>
+
+        <div class="field">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" placeholder="e.g. Alex Martin" required />
+        </div>
+
+        <div class="field">
+          <label for="phone">Contact number</label>
+          <input id="phone" name="phone" type="tel" inputmode="tel" placeholder="+44 7123 456789" pattern="^[+0-9 ()-]{6,}$" required />
+          <div class="small">Include country code if outside local area.</div>
+        </div>
+
+        <div class="row">
+          <div class="field" style="flex:1">
+            <label for="date">Preferred date</label>
+            <input id="date" name="date" type="date" required />
+          </div>
+          <div class="field" style="width:160px">
+            <label for="time">Preferred time</label>
+            <input id="time" name="time" type="time" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="service">Service (optional)</label>
+          <select id="service" name="service">
+            <option value="">— Select —</option>
+            <option>Screen repair</option>
+            <option>Battery replacement</option>
+            <option>Data recovery</option>
+            <option>General diagnosis</option>
+          </select>
+        </div>
+
+        <button type="submit" class="submit">Request appointment</button>
+
+        <div id="confirmation" class="confirmation" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // Simple client-side validation + friendly confirmation
+    function handleSubmit(e){
+      e.preventDefault();
+      const form = e.target;
+      const name = form.name.value.trim();
+      const phone = form.phone.value.trim();
+      const date = form.date.value;
+      const time = form.time.value;
+
+      // Basic checks
+      if(!name || !phone || !date || !time){
+        showConfirmation('Please fill in all required fields.', true);
+        return false;
+      }
+
+      // Date sanity: do not allow past dates
+      const chosen = new Date(date + 'T' + (time || '00:00'));
+      const now = new Date();
+      // set time-of-day tolerance (allow same-day future times only)
+      if(chosen < now){
+        showConfirmation('Selected date/time is in the past. Please choose a future slot.', true);
+        return false;
+      }
+
+      // Here: normally you'd send data to a server via fetch()/XHR.
+      // For this demo we simply show a confirmation message and reset the form.
+
+      const payload = {name, phone, date, time, service: form.service.value};
+      console.log('Appointment request payload (demo):', payload);
+
+      showConfirmation(`Thanks ${name.split(' ')[0] || name}! Your request for ${date} at ${time} has been received. We will call ${phone} to confirm.`, false);
+
+      form.reset();
+      return false;
+    }
+
+    function showConfirmation(msg, isError){
+      const el = document.getElementById('confirmation');
+      el.style.display = 'block';
+      el.textContent = msg;
+      if(isError){
+        el.style.background = 'rgba(255,90,90,0.06)';
+        el.style.color = '#ff8f8f';
+        el.style.border = '1px solid rgba(255,90,90,0.12)';
+      } else {
+        el.style.background = 'rgba(56,211,159,0.08)';
+        el.style.color = 'var(--accent2)';
+        el.style.border = '1px solid rgba(56,211,159,0.12)';
+      }
+      // hide after 8 seconds
+      setTimeout(()=>{ el.style.display='none'; },8000);
+    }
+
+    // Optional: pre-fill date with today's date + 1 day as a friendly default
+    (function prefillDate(){
+      const d = new Date(); d.setDate(d.getDate()+1);
+      const iso = d.toISOString().slice(0,10);
+      const dateInput = document.getElementById('date');
+      if(dateInput) dateInput.value = iso;
+      // default time to 10:00
+      const t = document.getElementById('time'); if(t) t.value='10:00';
+    })();
+  </script>
+
+  <!--
+    ------------------------ HOW TO LAUNCH THIS PAGE (STEP-BY-STEP) ------------------------
+    1) Save this whole file as `index.html` on your computer.
+
+    2) Open locally:
+       - Double-click index.html or open it in your browser (Chrome, Firefox, Edge). That loads the page as a static file.
+
+    3) If you want to serve it on your local network/port (so fetch/XHR or progressive features work):
+       - If you have Python 3 installed, in the folder with index.html run:
+         python -m http.server 8000
+         Then open your browser at http://localhost:8000
+
+    4) To make the form actually send data, you need a server endpoint.
+       - For demo purposes the form shows a confirmation in the browser only.
+       - If you want simple server handling, use a tiny server (Node, PHP, Python Flask, etc.)
+         Example (Node + Express) is easy to add; tell me if you'd like that code.
+
+    5) Publish online (two simple options):
+       - GitHub Pages: create a repo containing index.html, push it, then enable Pages in repo settings. The page will be served at `https://<your-username>.github.io/<repo>`.
+       - Netlify/Vercel: drag-and-drop the folder or link the repo; they will auto-deploy a static site.
+
+    6) Optional improvements you might request:
+       - Add server-side endpoint to save bookings (email, Google Sheets, database).
+       - Add calendar availability checks and disabled dates.
+       - Add reCAPTCHA or phone verification to avoid spam.
+       - Make a lightweight backend to email confirmation to the shop and customer.
+
+    If you'd like, I can also generate a ready-to-run Node/Express server script or a GitHub Pages README with instructions.
+  -->
+
+</body>
+</html>
